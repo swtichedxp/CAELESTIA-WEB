@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Caelestia — Pairing Panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Great+Vibes&family=Playfair+Display:ital@1&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ═══ THREE-PILL NAVBAR ═══ -->
+<nav class="navbar" id="navbar">
+
+  <!-- Pill 1: Brand -->
+  <div class="nav-pill-base nav-brand-pill">
+    <div class="brand-icon"><i data-lucide="zap"></i></div>
+    <span class="brand-name">Caelestia</span>
+  </div>
+
+  <!-- Pill 2: Nav links (hidden on mobile, shows hamburger toggle) -->
+  <div class="nav-pill-base nav-links-pill" id="navLinksPill" style="position:relative">
+    <div id="navLinks" style="display:flex;align-items:center;gap:2px;flex:1"></div>
+    <!-- Mobile dropdown -->
+    <div class="mobile-drop" id="mobileDrop">
+      <div id="mobileLinks"></div>
+      <div class="mobile-drop-divider"></div>
+      <button class="mobile-drop-link" onclick="openAdmin();closeDrop()">
+        <i data-lucide="shield"></i><span>Admin Panel</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Pill 3: Status + Admin -->
+  <div class="nav-pill-base nav-right-pill">
+    <div class="status-indicator">
+      <span class="status-dot" id="statusDot"></span>
+      <span id="statSessions">0 sessions</span>
+    </div>
+    <div class="pill-divider"></div>
+    <button class="admin-btn" id="adminNavBtn" onclick="openAdmin()">
+      <i data-lucide="shield"></i><span>Admin</span>
+    </button>
+  </div>
+
+  <!-- Hamburger (mobile only, separate pill) -->
+  <button class="hamburger-btn nav-pill-base" id="hamburgerBtn" onclick="toggleDrop()">
+    <span class="hbar hbar-top"></span>
+    <span class="hbar hbar-mid"></span>
+    <span class="hbar hbar-bot"></span>
+  </button>
+
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<div class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="hero-overline">WhatsApp Pairing Panel</div>
+    <h1 class="hero-title">Connect Your<br /><em>WhatsApp</em></h1>
+    <p class="hero-sub"><span id="typewriterText"></span><span class="cursor">|</span></p>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-num" id="heroOnline">—</div>
+        <div class="hero-stat-label">Servers Online</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num" id="heroCapacity">—</div>
+        <div class="hero-stat-label">Total Capacity</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num" id="heroConnected">—<span>sessions</span></div>
+        <div class="hero-stat-label">Live Connections</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">5</div>
+        <div class="hero-stat-label">Global Nodes</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MAIN CONTENT ═══ -->
+<main class="main">
+
+  <!-- ── SERVER ANALYTICS ── -->
+  <section style="padding-top:2.5rem">
+    <div class="section-head">
+      <div class="section-head-icon"><i data-lucide="server"></i></div>
+      <div>
+        <div class="section-head-title">Server Analytics</div>
+        <div class="section-head-desc">Live capacity across all nodes — click to select</div>
+      </div>
+      <div class="section-head-actions">
+        <button class="btn-ghost" id="refreshServersBtn" onclick="refreshServers()">
+          <i data-lucide="refresh-cw"></i>Refresh
+        </button>
+      </div>
+    </div>
+
+    <!-- Summary tiles -->
+    <div class="analytics-summary" id="analyticsSummary">
+      <div class="stat-tile"><div class="stat-tile-num" id="tileTotalSrv">—</div><div class="stat-tile-label">Total Servers</div></div>
+      <div class="stat-tile"><div class="stat-tile-num" id="tileOnline">—</div><div class="stat-tile-label">Online</div></div>
+      <div class="stat-tile"><div class="stat-tile-num" id="tileConnected">—</div><div class="stat-tile-label">Connected Sessions</div></div>
+      <div class="stat-tile"><div class="stat-tile-num" id="tileAvailable">—</div><div class="stat-tile-label">Slots Available</div></div>
+    </div>
+
+    <!-- Server grid -->
+    <div class="server-analytics-grid" id="serverGrid">
+      <div class="sessions-empty"><i data-lucide="loader-2" class="spinner"></i><span>Loading servers…</span></div>
+    </div>
+  </section>
+
+  <div class="section-sep"></div>
+
+  <!-- ── PAIRING SECTION ── -->
+  <section>
+    <div class="section-head">
+      <div class="section-head-icon"><i data-lucide="smartphone"></i></div>
+      <div>
+        <div class="section-head-title">Pair a Number</div>
+        <div class="section-head-desc">International format · no + prefix</div>
+      </div>
+    </div>
+
+    <div class="pair-layout">
+
+      <!-- Left: channel gate → pair form -->
+      <div>
+        <!-- Channel gate -->
+        <div id="channelGateCard">
+          <p style="font-size:0.82rem;color:var(--text-2);margin-bottom:0.9rem;line-height:1.6">Join our community first — it only takes a second, and it keeps you updated.</p>
+          <div class="gate-channels" id="gateChannels">
+            <!-- populated from API -->
+            <a href="https://t.me/andromedaxs" target="_blank" class="gate-ch-btn tg">
+              <i data-lucide="send"></i>
+              <div><strong>Telegram Channel</strong><span>@andromedaxs</span></div>
+              <i data-lucide="external-link" class="gate-ext"></i>
+            </a>
+            <a href="https://t.me/andromedaxsg" target="_blank" class="gate-ch-btn tg-group">
+              <i data-lucide="users"></i>
+              <div><strong>Telegram Group</strong><span>@andromedaxsg</span></div>
+              <i data-lucide="external-link" class="gate-ext"></i>
+            </a>
+            <a href="https://whatsapp.com/channel/0029VbCvACrHwXb3jsAMX30h" target="_blank" class="gate-ch-btn wa">
+              <i data-lucide="message-circle"></i>
+              <div><strong>WhatsApp Channel</strong><span>Stay updated</span></div>
+              <i data-lucide="external-link" class="gate-ext"></i>
+            </a>
+          </div>
+          <button class="btn-gate" onclick="confirmChannelFollow()">
+            <i data-lucide="check-circle-2"></i>
+            <span>I've followed — Continue</span>
+          </button>
+        </div>
+
+        <!-- Pair form (hidden until gate confirmed) -->
+        <div id="pairForm" class="hidden">
+          <div id="selectedServerLabel" style="font-size:0.73rem;color:var(--text-3);margin-bottom:0.75rem"></div>
+          <div class="input-row">
+            <div class="input-wrap">
+              <span class="input-prefix">+</span>
+              <input id="phoneInput" type="tel" placeholder="234 xxxxx" autocomplete="off" spellcheck="false" maxlength="20" />
+            </div>
+            <button class="btn-primary" id="pairBtn" onclick="startPairing()">
+              <i data-lucide="key-round" class="btn-icon"></i>
+              <span class="btn-text">Get Code</span>
+              <i data-lucide="loader-2" class="btn-spinner hidden"></i>
+            </button>
+          </div>
+          <div id="pairStatus" class="pair-status hidden"></div>
+
+          <!-- Code block -->
+          <div id="codeBlock" class="code-block hidden">
+            <div class="code-block-header"><i data-lucide="hash"></i>Pairing code</div>
+            <div class="code-display">
+              <div class="code-value" id="codeValue">————————</div>
+              <button class="btn-copy" id="copyBtn" onclick="copyCode()" title="Copy">
+                <i data-lucide="copy" id="copyIcon"></i>
+                <i data-lucide="check" id="copyCheck" class="hidden"></i>
+              </button>
+            </div>
+            <div class="code-steps">
+              <div class="step"><span class="step-num">1</span><span>Open WhatsApp on your phone</span></div>
+              <div class="step"><span class="step-num">2</span><span>Tap <strong>⋮ → Linked Devices → Link a Device</strong></span></div>
+              <div class="step"><span class="step-num">3</span><span>Tap <strong>Link with phone number</strong> and enter the code above</span></div>
+            </div>
+            <div class="code-timer" id="codeTimer">
+              <i data-lucide="clock"></i><span>Waiting for WhatsApp confirmation…</span>
+            </div>
+          </div>
+
+          <!-- Connected block -->
+          <div id="connectedBlock" class="connected-block hidden">
+            <div class="connected-row">
+              <div class="connected-icon"><i data-lucide="check-circle-2"></i></div>
+              <div class="connected-text">
+                <strong>Caelestia is now live 🌌</strong>
+                <span id="connectedPhone"></span>
+              </div>
+            </div>
+            <div class="notice-box">
+              Follow our channels for updates — <em>if you don't it means you're chopped</em> 🙃
+              <br />
+              <a href="https://whatsapp.com/channel/0029VbCvACrHwXb3jsAMX30h" target="_blank" class="channel-link">
+                <i data-lucide="radio"></i> Follow Channel
+              </a>
+            </div>
+            <button class="btn-ghost" onclick="resetPairForm()">
+              <i data-lucide="plus"></i>Pair another
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Sessions -->
+      <div>
+        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem">
+          <span style="font-size:0.82rem;font-weight:700;color:#fff">My Sessions</span>
+          <button class="btn-ghost ml-auto" onclick="loadSessions()"><i data-lucide="refresh-cw"></i>Refresh</button>
+        </div>
+        <div id="sessionsList" class="sessions-list">
+          <div class="sessions-empty"><i data-lucide="radio-tower"></i><span>No sessions yet</span></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="section-sep"></div>
+
+  <!-- ── UPDATES (Announcements / Changelogs / Polls) ── -->
+  <section id="contentSection" style="display:none">
+    <div class="section-head">
+      <div class="section-head-icon"><i data-lucide="bell"></i></div>
+      <div>
+        <div class="section-head-title">Updates</div>
+        <div class="section-head-desc">Server announcements, changes &amp; polls</div>
+      </div>
+    </div>
+
+    <div class="content-tabs">
+      <button class="content-tab active" onclick="switchTab('ann')">Announcements</button>
+      <button class="content-tab" onclick="switchTab('cl')">Changelog</button>
+      <button class="content-tab" onclick="switchTab('poll')">Polls</button>
+    </div>
+    <div class="content-panel active" id="panel-ann">
+      <div class="empty-state"><i data-lucide="megaphone"></i><span>No announcements yet</span></div>
+    </div>
+    <div class="content-panel" id="panel-cl">
+      <div class="empty-state"><i data-lucide="git-commit-horizontal"></i><span>No changelogs yet</span></div>
+    </div>
+    <div class="content-panel" id="panel-poll">
+      <div class="empty-state"><i data-lucide="bar-chart-2"></i><span>No active polls</span></div>
+    </div>
+  </section>
+
+  <!-- ── HOW IT WORKS ── -->
+  <div class="section-sep"></div>
+  <section>
+    <div class="section-head">
+      <div class="section-head-icon"><i data-lucide="info"></i></div>
+      <div><div class="section-head-title">How It Works</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1.5rem 2rem">
+      <div>
+        <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text-3);margin-bottom:6px">01</div>
+        <div style="font-size:0.84rem;font-weight:700;color:#fff;margin-bottom:5px">Select Server</div>
+        <div style="font-size:0.77rem;color:var(--text-2);line-height:1.6">Pick an available node. The capacity bar shows current load in real time.</div>
+      </div>
+      <div>
+        <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text-3);margin-bottom:6px">02</div>
+        <div style="font-size:0.84rem;font-weight:700;color:#fff;margin-bottom:5px">Enter Number</div>
+        <div style="font-size:0.77rem;color:var(--text-2);line-height:1.6">Your WhatsApp number with country code — no + or spaces.</div>
+      </div>
+      <div>
+        <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text-3);margin-bottom:6px">03</div>
+        <div style="font-size:0.84rem;font-weight:700;color:#fff;margin-bottom:5px">Get Code</div>
+        <div style="font-size:0.77rem;color:var(--text-2);line-height:1.6">An 8-character code appears. Enter it in WhatsApp under Linked Devices.</div>
+      </div>
+      <div>
+        <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text-3);margin-bottom:6px">04</div>
+        <div style="font-size:0.84rem;font-weight:700;color:#fff;margin-bottom:5px">Auto-Reconnect</div>
+        <div style="font-size:0.77rem;color:var(--text-2);line-height:1.6">Sessions restore automatically on restart. Send <code style="font-family:var(--mono);background:rgba(255,255,255,0.07);padding:1px 5px;border-radius:3px">.menu</code> to start.</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="footer">
+    <div class="footer-inner">
+      <span class="footer-brand-text">Caelestia</span>
+      <div class="footer-sep"></div>
+      <div>
+        <div class="footer-dev-label">Dev</div>
+        <div class="footer-dev-name">ҲЄƝ</div>
+      </div>
+      <div class="footer-credits">
+        <div class="footer-credits-label">Credits</div>
+        <div class="footer-credits-text">
+          Lord broken, Ddex-tech, Nuell&nbsp;|&nbsp;𝐇𝐄𝐗-𝐀𝐆⎋𝐍ᵀᴹ━⎋,&nbsp;<span class="charmaine">Charmaine</span>,&nbsp;501-takeoff
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══ ADMIN OVERLAY ═══ -->
+<div class="admin-overlay hidden" id="adminOverlay" onclick="handleOverlayClick(event)">
+  <div class="admin-modal" id="adminModal">
+    <div class="admin-header">
+      <div class="admin-header-icon"><i data-lucide="shield-check"></i></div>
+      <h2>Admin Panel</h2>
+      <button class="admin-close" onclick="closeAdmin()"><i data-lucide="x"></i></button>
+    </div>
+
+    <!-- Login -->
+    <div class="admin-login" id="adminLogin">
+      <div class="admin-login-icon"><i data-lucide="lock"></i></div>
+      <h3>Admin Access</h3>
+      <p>Enter the admin password to manage servers, content, and polls.</p>
+      <div class="admin-login-form">
+        <div class="admin-pw-wrap">
+          <i data-lucide="key-round"></i>
+          <input type="password" id="adminPwInput" placeholder="Admin password" onkeydown="if(event.key==='Enter')doAdminLogin()" />
+        </div>
+        <button class="btn-save" onclick="doAdminLogin()"><i data-lucide="log-in"></i>Login</button>
+        <div class="admin-login-err" id="adminLoginErr"></div>
+      </div>
+    </div>
+
+    <!-- Panel body -->
+    <div class="admin-body hidden" id="adminBody">
+      <div class="admin-tabs">
+        <button class="admin-tab active" onclick="switchAdminTab('servers')">Servers</button>
+        <button class="admin-tab" onclick="switchAdminTab('announcements')">Announcements</button>
+        <button class="admin-tab" onclick="switchAdminTab('changelogs')">Changelogs</button>
+        <button class="admin-tab" onclick="switchAdminTab('polls')">Polls</button>
+        <button class="admin-tab" onclick="switchAdminTab('channels')">Channels</button>
+      </div>
+      <div class="admin-panels">
+
+        <!-- Servers -->
+        <div class="admin-panel active" id="apanel-servers">
+          <div class="admin-form">
+            <div class="admin-form-row">
+              <div style="flex:1"><label class="admin-label">Server Name</label><input class="admin-input" id="srvName" placeholder="Server Alpha" /></div>
+              <div style="flex:1"><label class="admin-label">Tier</label>
+                <select class="admin-select" id="srvTier">
+                  <option value="high">High (max 20)</option>
+                  <option value="mid">Mid (max 16)</option>
+                  <option value="low">Low (max 5)</option>
+                </select>
+              </div>
+            </div>
+            <div><label class="admin-label">Backend URL</label><input class="admin-input" id="srvUrl" placeholder="http://1.prexzyvilla.site:2040" /></div>
+            <button class="btn-save" onclick="addServer()"><i data-lucide="plus"></i>Add Server</button>
+          </div>
+          <div class="divider"></div>
+          <div id="adminServerList"></div>
+        </div>
+
+        <!-- Announcements -->
+        <div class="admin-panel" id="apanel-announcements">
+          <div class="admin-form">
+            <div><label class="admin-label">Title</label><input class="admin-input" id="annTitle" placeholder="Announcement title" /></div>
+            <div><label class="admin-label">Message</label><textarea class="admin-textarea" id="annBody" placeholder="Write your announcement…"></textarea></div>
+            <button class="btn-save" onclick="postAnnouncement()"><i data-lucide="send"></i>Post</button>
+          </div>
+          <div class="divider"></div>
+          <div id="adminAnnList"></div>
+        </div>
+
+        <!-- Changelogs -->
+        <div class="admin-panel" id="apanel-changelogs">
+          <div class="admin-form">
+            <div class="admin-form-row">
+              <div style="flex:1"><label class="admin-label">Version</label><input class="admin-input" id="clVersion" placeholder="v2.1.0" /></div>
+              <div style="flex:1"><label class="admin-label">Tag</label><input class="admin-input" id="clTag" placeholder="Feature / Fix" /></div>
+            </div>
+            <div><label class="admin-label">Changes</label><textarea class="admin-textarea" id="clBody" placeholder="What changed…"></textarea></div>
+            <button class="btn-save" onclick="postChangelog()"><i data-lucide="git-commit-horizontal"></i>Post</button>
+          </div>
+          <div class="divider"></div>
+          <div id="adminClList"></div>
+        </div>
+
+        <!-- Polls -->
+        <div class="admin-panel" id="apanel-polls">
+          <div class="admin-form">
+            <div><label class="admin-label">Question</label><input class="admin-input" id="pollQ" placeholder="What do you think?" /></div>
+            <div><label class="admin-label">Options (one per line)</label><textarea class="admin-textarea" id="pollOpts" placeholder="Option A&#10;Option B&#10;Option C"></textarea></div>
+            <button class="btn-save" onclick="postPoll()"><i data-lucide="bar-chart-2"></i>Create Poll</button>
+          </div>
+          <div class="divider"></div>
+          <div id="adminPollList"></div>
+        </div>
+
+        <!-- Channels -->
+        <div class="admin-panel" id="apanel-channels">
+          <p style="font-size:0.78rem;color:var(--text-2);margin-bottom:1rem">Manage the channel gate links users must follow before pairing.</p>
+          <div class="admin-form">
+            <div class="admin-form-row">
+              <div style="flex:1"><label class="admin-label">Label</label><input class="admin-input" id="chLabel" placeholder="Telegram Channel" /></div>
+              <div style="flex:1"><label class="admin-label">Type</label>
+                <select class="admin-select" id="chType">
+                  <option value="tg">Telegram</option>
+                  <option value="tg-group">Telegram Group</option>
+                  <option value="wa">WhatsApp</option>
+                </select>
+              </div>
+            </div>
+            <div class="admin-form-row">
+              <div style="flex:2"><label class="admin-label">URL</label><input class="admin-input" id="chUrl" placeholder="https://t.me/…" /></div>
+              <div style="flex:1"><label class="admin-label">Handle</label><input class="admin-input" id="chHandle" placeholder="@handle" /></div>
+            </div>
+            <button class="btn-save" onclick="addChannel()"><i data-lucide="plus"></i>Add</button>
+          </div>
+          <div class="divider"></div>
+          <div id="adminChannelList"></div>
+          <button class="btn-save" style="margin-top:1rem" onclick="saveChannels()"><i data-lucide="save"></i>Save Channel Gate</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+  lucide.createIcons();
+  var _dropOpen = false;
+  function toggleDrop() {
+    _dropOpen = !_dropOpen;
+    document.getElementById('hamburgerBtn').classList.toggle('open', _dropOpen);
+    document.getElementById('mobileDrop').classList.toggle('open', _dropOpen);
+  }
+  function closeDrop() {
+    _dropOpen = false;
+    document.getElementById('hamburgerBtn').classList.remove('open');
+    document.getElementById('mobileDrop').classList.remove('open');
+  }
+  document.addEventListener('click', function(e) {
+    if (_dropOpen && !document.getElementById('navbar').contains(e.target)) closeDrop();
+  });
+</script>
+</body>
+</html>
