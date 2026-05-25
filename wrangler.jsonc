@@ -2,10 +2,13 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "caelestia-web",
   "compatibility_date": "2026-05-25",
-  "observability": { "enabled": true },
-  "assets": {
-    "directory": ".",
-    "not_found_handling": "single-page-application"
+  "observability": {
+    "enabled": true
   },
-  "compatibility_flags": ["nodejs_compat"]
+  "assets": {
+    "directory": "."
+  },
+  "compatibility_flags": [
+    "nodejs_compat"
+  ]
 }
