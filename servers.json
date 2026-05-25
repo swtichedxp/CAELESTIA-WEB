@@ -7,38 +7,6 @@
       "tier": "high",
       "maxUsers": 20,
       "label": "Alpha"
-    },
-    {
-      "id": "s2",
-      "name": "Server 2",
-      "url": "http://2.prexzyvilla.site:2040",
-      "tier": "high",
-      "maxUsers": 20,
-      "label": "Beta"
-    },
-    {
-      "id": "s3",
-      "name": "Server 3",
-      "url": "http://3.prexzyvilla.site:2040",
-      "tier": "mid",
-      "maxUsers": 16,
-      "label": "Gamma"
-    },
-    {
-      "id": "s4",
-      "name": "Server 4",
-      "url": "http://4.prexzyvilla.site:2040",
-      "tier": "mid",
-      "maxUsers": 16,
-      "label": "Delta"
-    },
-    {
-      "id": "s5",
-      "name": "Server 5",
-      "url": "http://5.prexzyvilla.site:2040",
-      "tier": "low",
-      "maxUsers": 5,
-      "label": "Epsilon"
     }
   ],
   "tiers": {
